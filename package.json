@@ -1,0 +1,14 @@
+{
+  "name": "p3nd1ng-journal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A static personal journal for GitHub Pages",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/site.test.mjs"
+  },
+  "engines": {"node": ">=22"}
+}
