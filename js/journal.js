@@ -29,8 +29,13 @@
     {id:'summit',name:'群山之间',alt:'云雾中的高山与金色光线'},
     {id:'forest',name:'绿野微光',alt:'阳光透过绿意盎然的森林'}
   ];
-
+  const isHome=document.body.classList.contains('home-page');
   $('#site-header').innerHTML = `<a class="brand" href="/" aria-label="P3nd1ng 博客首页"><span class="brand-mark" aria-hidden="true">p.</span><span class="brand-name">P3nd1ng<small>THE PERSONAL JOURNAL</small></span></a><div class="header-right"><nav class="desktop-nav" id="main-nav" aria-label="主导航"><a href="/blog/" ${document.body.classList.contains('blog-page')?'aria-current="page"':''}>文章</a><a href="/archives/" ${location.pathname.startsWith('/archives')?'aria-current="page"':''}>归档</a><a href="/about/" ${location.pathname==='/about/'?'aria-current="page"':''}>关于</a></nav><div class="header-tools"><button class="icon-button theme-shortcut" id="theme-shortcut" aria-label="切换主题">${icon('sun')}</button><button class="icon-button" data-open="music-dialog" aria-label="打开音乐播放器">${icon('music')}</button><button class="icon-button" data-open="settings-dialog" aria-label="打开个性化设置">${icon('settings')}</button><button class="icon-button menu-toggle" id="menu-toggle" aria-label="展开导航" aria-expanded="false" aria-controls="main-nav">${icon('menu')}</button></div></div>`;
+  if(isHome){
+    $('#site-header .brand').setAttribute('href','#welcome');
+    $('#main-nav a').setAttribute('href','#journal');
+    $('#main-nav a').setAttribute('aria-current','page');
+  }
   document.body.insertAdjacentHTML('beforeend', `
     <dialog id="settings-dialog" aria-labelledby="settings-title"><div class="dialog-heading"><h2 id="settings-title">让这里，更像你。</h2><button class="icon-button" data-close aria-label="关闭个性化设置">${icon('close')}</button></div><p class="dialog-subtitle">选一种心情，留一片风景。</p>
       <p class="control-title">阅读主题</p><div class="theme-options" role="group" aria-label="阅读主题"><button class="theme-choice" data-theme-choice="light" style="--swatch:#f6f7f2">晴日留白</button><button class="theme-choice" data-theme-choice="forest" style="--swatch:#b4c3a2">苔绿手记</button><button class="theme-choice" data-theme-choice="dark" style="--swatch:#23362e">深夜漫游</button></div>
@@ -89,9 +94,52 @@
   function filterArticles(){const query=search.value.trim().toLocaleLowerCase();let count=0;$$('[data-search]').forEach(el=>{el.hidden=!el.dataset.search.includes(query);if(!el.hidden)count++;});$('#empty-state').hidden=count>0;$('#feed-end').hidden=count===0;$('#search-status').textContent=query?`找到 ${count} 篇文章`:'';}
   search?.addEventListener('input',filterArticles);
   $('#clear-search')?.addEventListener('click',()=>{search.value='';filterArticles();search.focus();});
-  function updateScroll(){$('#back-top').hidden=scrollY<500;}
-  addEventListener('scroll',updateScroll,{passive:true});updateScroll();
-  $('#back-top').addEventListener('click',()=>scrollTo({top:0,behavior:prefs.motion&&!matchMedia('(prefers-reduced-motion: reduce)').matches?'smooth':'instant'}));
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const scrollBehavior=()=>prefs.motion&&!reducedMotion.matches?'smooth':'instant';
+  const hero=isHome?$('.hero'):null;
+  let scrollFrame=0;
+  function updateScroll(){
+    scrollFrame=0;
+    $('#back-top').hidden=scrollY<500;
+    if(hero){
+      const height=hero.offsetHeight;
+      document.body.classList.toggle('article-view',hero.getBoundingClientRect().bottom<=140);
+      const progress=prefs.motion&&!reducedMotion.matches?Math.min(1,Math.max(0,scrollY/height)):0;
+      hero.style.setProperty('--hero-progress',String(progress));
+    }
+  }
+  addEventListener('scroll',()=>{if(!scrollFrame)scrollFrame=requestAnimationFrame(updateScroll);},{passive:true});
+  addEventListener('resize',updateScroll,{passive:true});
+  reducedMotion.addEventListener('change',updateScroll);
+  $('#motion-toggle').addEventListener('change',updateScroll);
+  $('#reset-preferences').addEventListener('click',updateScroll);
+  updateScroll();
+  // Keep the transition in this document so music and reading state continue.
+  if(isHome){
+    document.addEventListener('click',e=>{
+      const link=e.target.closest('a[href="#journal"],a[href="#welcome"]');
+      if(!link||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;
+      const target=$(link.getAttribute('href'));
+      if(!target)return;
+      e.preventDefault();
+      const hash=link.getAttribute('href');
+      if(location.hash!==hash)history.pushState(null,'',hash);
+      target.scrollIntoView({behavior:scrollBehavior(),block:'start'});
+      target.focus({preventScroll:true});
+    });
+    if('IntersectionObserver' in window){
+      const revealObserver=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');revealObserver.unobserve(entry.target);}});
+      },{threshold:.08});
+      $$('.home-journal .blog-sidebar,.home-journal .feed-toolbar,.home-journal .article-card,.home-journal .next-story').forEach(el=>{
+        el.dataset.reveal='';revealObserver.observe(el);
+      });
+    }
+  }
+  $('#back-top').addEventListener('click',()=>{
+    if(isHome&&location.hash)history.replaceState(null,'',location.pathname+location.search);
+    scrollTo({top:0,behavior:scrollBehavior()});
+  });
   const messages=['你好呀，我是团子。今天也要开心。','写一行代码，也算向前一步。','读累了的话，看看远处的风景吧。','不着急，我们慢慢来。','能在这里遇见你，真好。'];let greeting=0;
   $('#pet-button').addEventListener('click',()=>{const m=$('#pet-message');m.textContent=messages[greeting++%messages.length];m.hidden=false;clearTimeout(petTimer);petTimer=setTimeout(()=>m.hidden=true,4200);});
   let pointerFrame;

@@ -22,6 +22,15 @@ test('original article body is byte-identical after line-ending normalization',a
   const expected=(await readFile(new URL('./article-body.sha256',import.meta.url),'utf8')).trim();
   assert.equal(createHash('sha256').update(body).digest('hex'),expected);
 });
+test('the entrance reaches real article content in the same document',async()=>{
+  const home=await(await fetch(base+'/')).text();
+  assert.match(home,/<a class="enter-button" href="#journal">/);
+  assert.equal((home.match(/id="journal"/g)||[]).length,1);
+  const section=home.slice(home.indexOf('<!-- home-journal:start -->'));
+  assert.match(section,/class="article-card" href="\/2025\/10\/27\/hello-world\/"/);
+  assert.match(section,/id="article-search"/);
+  assert.equal((home.match(/id="site-header"/g)||[]).length,1);
+});
 test('local music supports partial reads needed for seeking',async()=>{
   for(const name of ['mountain-letter','forest-rest']){
     const r=await fetch(`${base}/audio/${name}.wav`,{headers:{Range:'bytes=0-43'}});assert.equal(r.status,206);assert.match(r.headers.get('content-range'),/^bytes 0-43\//);const b=Buffer.from(await r.arrayBuffer());assert.equal(b.length,44);assert.equal(b.toString('ascii',0,4),'RIFF');

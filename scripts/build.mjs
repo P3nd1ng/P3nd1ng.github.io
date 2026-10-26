@@ -1,7 +1,8 @@
 import {cp,mkdir,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import './check.mjs';
+await import('./sync-home.mjs');
+await import('./check.mjs');
 const root=fileURLToPath(new URL('..',import.meta.url));
 const dist=path.join(root,'dist');
 // Only ever clean the fixed generated dist directory in this checkout.
