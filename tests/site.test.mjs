@@ -26,6 +26,7 @@ test('the entrance reaches real article content in the same document',async()=>{
   const home=await(await fetch(base+'/')).text();
   assert.match(home,/<a class="enter-button" href="#journal">/);
   assert.equal((home.match(/id="journal"/g)||[]).length,1);
+  assert.equal((home.match(/class="hero-image home-backdrop"/g)||[]).length,1,'the entrance and reading area share one backdrop');
   const section=home.slice(home.indexOf('<!-- home-journal:start -->'));
   assert.doesNotMatch(section,/class="blog-banner"/,'the landing image must lead straight into the article list');
   assert.match(section,/class="article-card" href="\/2025\/10\/27\/hello-world\/"/);

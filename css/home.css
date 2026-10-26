@@ -1,19 +1,24 @@
 /* One continuous page: landscape entrance → journal. */
 html:has(body.home-page){scroll-padding-top:70px}
+.home-page{isolation:isolate}
+.home-page>.home-backdrop{position:fixed;inset:0;z-index:-2;translate:none;scale:none}
+.home-page::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--paper);opacity:0;transition:opacity .5s ease}
+.home-page.article-view::before{opacity:.5}
+html[data-theme="forest"] .home-page.article-view::before{opacity:.4}
+html[data-theme="dark"] .home-page.article-view::before{opacity:.6}
 .home-page>.site-header{position:fixed;transition:height .35s,background .35s,color .35s,box-shadow .35s}
 .home-page.article-view>.site-header{height:70px;color:var(--ink);background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(18px);box-shadow:0 3px 20px #142a2515;border-bottom:1px solid var(--line)}
 .home-page.article-view .site-header .icon-button{border-color:var(--line)}
 .home-page.article-view .site-header .header-tools{border-color:var(--line)}
 .home-page.article-view .site-header a:hover,.home-page.article-view .site-header button:hover{color:var(--accent)}
-.home-journal{position:relative;scroll-margin-top:0;padding:38px 0 1px;min-height:100svh;background:var(--paper)}
+.home-journal{position:relative;scroll-margin-top:0;padding:38px 0 1px;min-height:100svh;background:transparent}
 .home-journal::before,.home-journal::after{content:none}
 .home-journal:focus,#welcome:focus{outline:none}
 .home-journal .blog-content{margin-top:0;margin-bottom:65px}
-.home-journal .blog-welcome{color:var(--muted)}
-.home-page .hero{--hero-progress:0}
+.home-journal .blog-welcome{color:var(--ink);background:color-mix(in srgb,var(--card) 86%,transparent);backdrop-filter:blur(15px);border:1px solid var(--line);border-radius:12px;padding:9px 14px;margin-bottom:17px}
+.home-page .hero{--hero-progress:0;background:transparent}
 .home-page .hero-content{translate:0 calc(var(--hero-progress)*75px)}
 .home-page .hero-content>*{opacity:calc(1 - var(--hero-progress)*.8)}
-.home-page .hero-image{translate:0 calc(var(--hero-progress)*55px);scale:calc(1 + var(--hero-progress)*.04)}
 .home-page .enter-button>span{display:inline-block;transition:translate .25s}
 .home-page .enter-button:hover>span{translate:0 4px}
 @media(prefers-reduced-motion:no-preference){
