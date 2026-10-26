@@ -5,14 +5,12 @@ import {readFile,writeFile} from 'node:fs/promises';
 const homeUrl=new URL('../index.html',import.meta.url);
 const blog=await readFile(new URL('../blog/index.html',import.meta.url),'utf8');
 let home=await readFile(homeUrl,'utf8');
-const banner=blog.match(/<section class="blog-banner"[\s\S]*?<\/section>/)?.[0];
 const list=blog.match(/<main class="blog-content"[\s\S]*?<\/main>/)?.[0];
 const footer=blog.match(/<footer class="site-footer"[\s\S]*?<\/footer>/)?.[0];
-if(!banner||!list||!footer)throw new Error('The article list is missing its banner, content or footer.');
+if(!list||!footer)throw new Error('The article list is missing its content or footer.');
 const content=[
   '<!-- home-journal:start -->',
   '<section class="blog-page home-journal" id="journal" tabindex="-1" aria-label="文章列表">',
-  banner.replaceAll('blog-title','journal-title').replace('<h1 ','<h2 ').replace('</h1>','</h2>'),
   list.replace('<main ','<div ').replace('</main>','</div>').replace('id="journal"','id="article-list"').replaceAll('href="/blog/"','href="#journal"'),
   footer,
   '</section>',
