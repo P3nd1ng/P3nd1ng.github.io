@@ -24,7 +24,7 @@ test('original article body is byte-identical after line-ending normalization',a
 });
 test('the entrance reaches real article content in the same document',async()=>{
   const home=await(await fetch(base+'/')).text();
-  assert.match(home,/<a class="enter-button" href="#journal">/);
+  assert.match(home,/<a class="enter-button" href="#journal" aria-label="进入博客">/);
   assert.equal((home.match(/id="journal"/g)||[]).length,1);
   assert.equal((home.match(/class="hero-image home-backdrop"/g)||[]).length,1,'the entrance and reading area share one backdrop');
   const section=home.slice(home.indexOf('<!-- home-journal:start -->'));

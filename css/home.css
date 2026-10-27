@@ -25,6 +25,7 @@ html[data-theme="dark"] .home-page.article-view::before{opacity:.6}
 .home-page .hero-content>*{opacity:calc(1 - var(--hero-progress)*.8)}
 .home-page .enter-button>span{display:inline-block;transition:translate .25s}
 .home-page .enter-button:hover>span{translate:0 4px}
+.home-page .hero .enter-button{position:relative;top:28px;width:56px;height:56px;padding:0;justify-content:center;border-radius:50%;font-family:var(--sans);font-size:25px;line-height:1}
 @media(prefers-reduced-motion:no-preference){
   html:not([data-motion="off"]) .home-journal [data-reveal]{opacity:0;translate:0 24px;transition:opacity .65s ease,translate .65s cubic-bezier(.2,.7,.2,1)}
   html:not([data-motion="off"]) .home-journal [data-reveal].is-visible{opacity:1;translate:0 0}
