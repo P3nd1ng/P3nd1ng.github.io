@@ -12,7 +12,7 @@
 
 原仓库是 **Hexo 7.3.0 / Butterfly 5.5.1 已生成的静态文件**，没有 Hexo 的 `source/`、主题源文件或 `_config.yml`。此次直接维护现有静态站，没有引入服务端或外部音乐 API。旧 CSS/JS 保留供追溯，新页面仅加载 `journal.css`、`preferences.js`、`journal.js`。
 
-- 保留唯一真实文章 Hello World 的完整正文、日期、原头像、图标及 CC BY-NC-SA 4.0 文章授权。
+- 保留唯一真实文章 Hello World 的完整正文、日期、原头像文件、图标及 CC BY-NC-SA 4.0 文章授权；当前个人头像使用站长提供的图片。
 - 保留 `/2025/10/27/hello-world/`、`/archives/`、`/archives/2025/`、`/archives/2025/10/`。
 - 新增 `/blog/`、`/about/`、`/credits/`、自定义 `404.html`，修正原来的 example.com 和无效菜单链接。
 - 三种主题、四张本地壁纸、可关闭的团子互动与动效、文章搜索及空结果状态。
