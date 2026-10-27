@@ -56,8 +56,6 @@
     document.documentElement.dataset.motion=prefs.motion?'on':'off';
     document.documentElement.style.setProperty('--wallpaper',`url('/img/wallpapers/${prefs.wallpaper}.jpg')`);
     const w=wallpapers.find(w=>w.id===prefs.wallpaper);
-    if($('#wallpaper-caption')) $('#wallpaper-caption').textContent=w.name;
-    if($('#wallpaper-number')) $('#wallpaper-number').textContent=`0${wallpapers.indexOf(w)+1} / 03`;
     if($('#hero-image')) $('#hero-image').setAttribute('aria-label',w.alt);
     $$('[data-theme-choice]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.themeChoice===prefs.theme)));
     $$('[data-wallpaper]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.wallpaper===prefs.wallpaper)));
@@ -70,7 +68,13 @@
   $$('[data-theme-choice]').forEach(el=>el.addEventListener('click',()=>{prefs.theme=el.dataset.themeChoice;applyPreferences();}));
   $$('[data-wallpaper]').forEach(el=>el.addEventListener('click',()=>{prefs.wallpaper=el.dataset.wallpaper;applyPreferences();}));
   $('#theme-shortcut').addEventListener('click',()=>{const themes=['light','forest','dark'];prefs.theme=themes[(themes.indexOf(prefs.theme)+1)%3];applyPreferences();toast({light:'晴日留白',forest:'苔绿手记',dark:'深夜漫游'}[prefs.theme]);});
-  $('#next-wallpaper')?.addEventListener('click',()=>{prefs.wallpaper=wallpapers[(wallpapers.findIndex(w=>w.id===prefs.wallpaper)+1)%3].id;applyPreferences();});
+  function stepWallpaper(direction){
+    const index=wallpapers.findIndex(w=>w.id===prefs.wallpaper);
+    prefs.wallpaper=wallpapers[(index+direction+wallpapers.length)%wallpapers.length].id;
+    applyPreferences();
+  }
+  $('#prev-wallpaper')?.addEventListener('click',()=>stepWallpaper(-1));
+  $('#next-wallpaper')?.addEventListener('click',()=>stepWallpaper(1));
   $('#pet-toggle').addEventListener('change',e=>{prefs.pet=e.target.checked;applyPreferences();});
   $('#motion-toggle').addEventListener('change',e=>{prefs.motion=e.target.checked;applyPreferences();});
   $('#reset-preferences').addEventListener('click',()=>{prefs={theme:'light',wallpaper:'alpine',pet:true,motion:true};applyPreferences();toast('已恢复默认偏好');});
