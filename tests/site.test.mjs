@@ -5,12 +5,19 @@ import {createHash} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import {fileURLToPath} from 'node:url';
+import {orderPinned} from '../js/pins.js';
 const root=fileURLToPath(new URL('..',import.meta.url));
 const server=spawn(process.execPath,['scripts/serve.mjs'],{cwd:root,env:{...process.env,PORT:'4317'},windowsHide:true,stdio:['ignore','pipe','pipe']});
 server.stderr.on('data',b=>process.stderr.write(b));
 await Promise.race([once(server.stdout,'data'),once(server,'exit').then(()=>{throw Error('Test server exited');})]);
 after(()=>server.kill());
 const base='http://127.0.0.1:4317';
+test('pinned articles come first in configured order and other articles stay in order',()=>{
+  const posts=['/a/','/b/','/c/','/d/'];
+  assert.deepEqual(orderPinned(posts,['/c/index.html','/a/']),['/c/','/a/','/b/','/d/']);
+  assert.deepEqual(orderPinned(posts,['/missing/']),posts);
+  assert.deepEqual(orderPinned(posts,[]),posts);
+});
 test('all existing and new routes return readable pages',async()=>{
   for(const route of ['/','/blog/','/archives/','/archives/2025/','/archives/2025/10/','/2025/10/27/hello-world/','/about/','/credits/']){
     const r=await fetch(base+route);assert.equal(r.status,200,route);assert.match(await r.text(),/<h1[ >]/);

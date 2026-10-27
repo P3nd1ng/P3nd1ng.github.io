@@ -123,6 +123,13 @@
   updateScroll();
   // Keep the transition in this document so music and reading state continue.
   if(isHome){
+    hero.addEventListener('dblclick',e=>{
+      if(e.button!==0||e.target.closest('a,button,input,select,textarea,[contenteditable="true"]'))return;
+      const target=$('#journal');
+      if(location.hash!=='#journal')history.pushState(null,'','#journal');
+      target.scrollIntoView({behavior:'instant',block:'start'});
+      target.focus({preventScroll:true});
+    });
     document.addEventListener('click',e=>{
       const link=e.target.closest('a[href="#journal"],a[href="#welcome"]');
       if(!link||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;

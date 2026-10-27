@@ -27,3 +27,8 @@ html[data-motion="off"]{scroll-behavior:auto}html[data-motion="off"] *,html[data
 .site-header .brand-name{display:block;font-family:"Segoe UI",var(--sans);font-size:21px;font-weight:600;line-height:1;font-variant-numeric:lining-nums;white-space:nowrap}
 .site-header img.brand-mark{display:block;object-fit:cover;object-position:center;padding:0;flex-shrink:0}
 @media(max-width:360px){.site-header .brand-name{font-size:17px}}
+
+/* Enlarge only the profile-card avatar. */
+.blog-sidebar .profile-avatar{width:110px;height:110px}
+@media(max-width:680px){.blog-sidebar .profile-card{grid-template-columns:72px minmax(0,1fr) auto}.blog-sidebar .profile-avatar{width:72px;height:72px}}
+.article-card{position:relative}.pin-badge{position:absolute;z-index:1;top:14px;right:14px;padding:5px 11px;border-radius:999px;background:#f6f4eb;color:#344c42;font-size:11px;line-height:1.4;box-shadow:0 3px 12px #0002}
