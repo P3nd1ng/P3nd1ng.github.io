@@ -2,6 +2,7 @@
 html:has(body.home-page){scroll-padding-top:70px}
 .home-page{isolation:isolate}
 .home-page>.home-backdrop{position:fixed;inset:0;z-index:-2;translate:none;scale:none}
+html[data-wallpaper="adventure"] .home-page>.home-backdrop{background-image:linear-gradient(rgba(0,0,0,.58),rgba(0,0,0,.58)),var(--wallpaper)}
 .home-page::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--paper);opacity:0;transition:opacity .5s ease}
 .home-page.article-view::before{opacity:.5}
 html[data-theme="forest"] .home-page.article-view::before{opacity:.4}
@@ -23,6 +24,7 @@ html[data-theme="dark"] .home-page.article-view::before{opacity:.6}
 .wallpaper-prev{left:4.2%}.wallpaper-next{right:4.2%}
 .home-page .hero-content{translate:0 calc(var(--hero-progress)*75px)}
 .home-page .hero-content>*{opacity:calc(1 - var(--hero-progress)*.8)}
+html[data-wallpaper="adventure"] .home-page .hero h1,html[data-wallpaper="adventure"] .home-page .hero-description,html[data-wallpaper="adventure"] .home-page .hero .eyebrow{text-shadow:0 2px 8px #101825cc,0 3px 20px #10182599}
 .home-page .enter-button>span{display:inline-block;transition:translate .25s}
 .home-page .enter-button:hover>span{translate:0 4px}
 .home-page .hero .enter-button{position:relative;top:28px;width:56px;height:56px;padding:0;justify-content:center;border-radius:50%;font-family:var(--sans);font-size:25px;line-height:1}
@@ -34,3 +36,4 @@ html[data-theme="dark"] .home-page.article-view::before{opacity:.6}
 html[data-motion="off"] .home-page .hero-content,html[data-motion="off"] .home-page .hero-image{translate:none;scale:none}
 html[data-motion="off"] .home-page .hero-content>*{opacity:1}
 @media(max-width:680px){.home-journal{padding-top:25px}.home-journal .blog-content{margin-top:0;margin-bottom:45px}.wallpaper-arrow{width:44px;height:64px;background:transparent;border-color:transparent;backdrop-filter:none}.wallpaper-prev{left:8px}.wallpaper-next{right:8px}.wallpaper-arrow svg{width:19px;height:19px}}
+@media(max-width:680px){html[data-wallpaper="adventure"] .home-backdrop{background-position:60% center}}

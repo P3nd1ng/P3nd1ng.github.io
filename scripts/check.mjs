@@ -8,6 +8,8 @@ for(const f of files){const html=await readFile(f,'utf8');if(!/<html lang="zh-CN
   for(const [,url] of html.matchAll(/(?:href|src)="([^"#]+)"/g)){if(/^(https?:|data:|mailto:)/.test(url))continue;const clean=url.split(/[?#]/)[0];let target=path.resolve(url.startsWith('/')?root:path.dirname(f),url.startsWith('/')?'.'+clean:clean);if(clean.endsWith('/'))target=path.join(target,'index.html');if(!await stat(target).catch(()=>null))errors.push(`${path.relative(root,f)}: missing ${url}`);}
 }
 for(const asset of ['alpine','summit','forest']){if((await stat(path.join(root,'img/wallpapers',asset+'.jpg'))).size<10000)errors.push(`${asset}: invalid image`);}
+const adventure=await readFile(path.join(root,'img/wallpapers/adventure.png'));
+if(adventure.length<10000 || !adventure.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))errors.push('adventure: invalid PNG');
 for(const name of ['mountain-letter','forest-rest']){const wav=await readFile(path.join(root,'audio',name+'.wav'));if(wav.toString('ascii',0,4)!=='RIFF'||wav.length<100000)errors.push(`${name}: invalid audio`);}
 if(errors.length){console.error(errors.join('\n'));process.exitCode=1;throw new Error('Static site checks failed');}
 console.log(`Checked ${files.length} pages: local links, metadata and media passed.`);

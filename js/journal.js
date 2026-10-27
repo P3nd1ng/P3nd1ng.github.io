@@ -13,18 +13,20 @@
     github:'<path d="M9 19c-4 1-4-2-6-2m12 5v-4a3.5 3.5 0 0 0-1-2.5c3-.3 6-1.5 6-6a4.7 4.7 0 0 0-1-3 4 4 0 0 0-.1-3s-1-.3-3.3 1.2a12 12 0 0 0-6.2 0C7.1 2.2 6 2.5 6 2.5a4 4 0 0 0-.1 3 4.7 4.7 0 0 0-1 3c0 4.5 3 5.7 6 6A3.5 3.5 0 0 0 10 17v5"></path>'
   };
   const icon = (name) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.sun}</svg>`;
-  let prefs = {theme:'light',wallpaper:'alpine',pet:true,motion:true};
+  const wallpaperFiles={adventure:'adventure.png',alpine:'alpine.jpg',summit:'summit.jpg',forest:'forest.jpg'};
+  let prefs = {theme:'light',wallpaper:'adventure',wallpaperRevision:2,pet:true,motion:true};
   let storageAvailable = true;
   const read = (key, fallback) => {try {return JSON.parse(localStorage.getItem(key)) ?? fallback;} catch {storageAvailable=false;return fallback;}};
   const write = (key, value) => {try {localStorage.setItem(key,JSON.stringify(value));} catch {storageAvailable=false;}};
   const saved = read('p3-journal-preferences', {});
   if (saved && typeof saved === 'object') {
     if (['light','forest','dark'].includes(saved.theme)) prefs.theme=saved.theme;
-    if (['alpine','summit','forest'].includes(saved.wallpaper)) prefs.wallpaper=saved.wallpaper;
+    if (saved.wallpaperRevision===2 && Object.hasOwn(wallpaperFiles,saved.wallpaper)) prefs.wallpaper=saved.wallpaper;
     if (typeof saved.pet==='boolean') prefs.pet=saved.pet;
     if (typeof saved.motion==='boolean') prefs.motion=saved.motion;
   }
   const wallpapers = [
+    {id:'adventure',name:'黄昏之巅',alt:'冒险者在黄昏眺望奇幻世界'},
     {id:'alpine',name:'山野来信',alt:'山峦、木屋与湖泊倒影'},
     {id:'summit',name:'群山之间',alt:'云雾中的高山与金色光线'},
     {id:'forest',name:'绿野微光',alt:'阳光透过绿意盎然的森林'}
@@ -39,7 +41,7 @@
   document.body.insertAdjacentHTML('beforeend', `
     <dialog id="settings-dialog" aria-labelledby="settings-title"><div class="dialog-heading"><h2 id="settings-title">让这里，更像你。</h2><button class="icon-button" data-close aria-label="关闭个性化设置">${icon('close')}</button></div><p class="dialog-subtitle">选一种心情，换一张壁纸。</p>
       <p class="control-title">阅读主题</p><div class="theme-options" role="group" aria-label="阅读主题"><button class="theme-choice" data-theme-choice="light" style="--swatch:#f6f7f2">晴日留白</button><button class="theme-choice" data-theme-choice="forest" style="--swatch:#b4c3a2">苔绿手记</button><button class="theme-choice" data-theme-choice="dark" style="--swatch:#23362e">深夜漫游</button></div>
-      <p class="control-title">背景壁纸</p><div class="wallpaper-options" role="group" aria-label="首屏壁纸">${wallpapers.map(w=>`<button class="wallpaper-choice" data-wallpaper="${w.id}" aria-label="选择${w.name}壁纸"><img src="/img/wallpapers/${w.id}.jpg" alt="" loading="lazy"><span>${w.name}</span></button>`).join('')}</div><p class="wallpaper-note">壁纸应用于入口大图与文章列表背景。</p>
+      <p class="control-title">背景壁纸</p><div class="wallpaper-options" role="group" aria-label="首屏壁纸">${wallpapers.map(w=>`<button class="wallpaper-choice" data-wallpaper="${w.id}" aria-label="选择${w.name}壁纸"><img src="/img/wallpapers/${wallpaperFiles[w.id]}" alt="" loading="lazy"><span>${w.name}</span></button>`).join('')}</div><p class="wallpaper-note">壁纸应用于入口大图与文章列表背景。</p>
       <label class="setting-row" for="pet-toggle">让团子陪我阅读<input type="checkbox" id="pet-toggle" checked></label><label class="setting-row" for="motion-toggle">轻柔的界面动效<input type="checkbox" id="motion-toggle" checked></label><button class="reset-button" id="reset-preferences">恢复默认偏好</button><p class="wallpaper-note" id="storage-note">偏好只保存在当前浏览器。</p>
     </dialog>
     <dialog id="music-dialog" aria-labelledby="music-title"><div class="dialog-heading"><h2 id="music-title">此刻，听一点。</h2><button class="icon-button" data-close aria-label="关闭音乐播放器">${icon('close')}</button></div><div class="music-art"><div class="vinyl" aria-hidden="true"></div></div><h3 class="track-title" id="track-title">山间来信</h3><div class="track-credit">原创合成氛围小曲 · JOURNAL SESSIONS</div><label for="music-seek" class="control-title">播放进度</label><input class="music-seek" id="music-seek" type="range" min="0" max="32" step="0.1" value="0"><div class="time-labels"><span id="current-time">0:00</span><span id="duration">0:32</span></div><div class="player-controls"><button class="icon-button" id="prev-track" aria-label="上一首">${icon('prev')}</button><button class="icon-button play-main" data-play aria-label="播放音乐">${icon('play')}</button><button class="icon-button" id="next-track" aria-label="下一首">${icon('next')}</button></div><label class="volume-row" for="music-volume">${icon('volume')}<input type="range" id="music-volume" min="0" max="1" step="0.01" value="0.35" aria-label="音量"><span id="volume-value">35%</span></label><label class="track-select" for="track-select"><span class="muted">曲目</span><select id="track-select" aria-label="选择曲目"><option value="0">01 山间来信</option><option value="1">02 林中小憩</option></select></label><div class="audio-status" id="audio-status" role="status">点击播放，让音乐慢慢开始。</div></dialog>
@@ -54,11 +56,12 @@
   function applyPreferences(){
     document.documentElement.dataset.theme=prefs.theme;
     document.documentElement.dataset.motion=prefs.motion?'on':'off';
-    document.documentElement.style.setProperty('--wallpaper',`url('/img/wallpapers/${prefs.wallpaper}.jpg')`);
+    document.documentElement.dataset.wallpaper=prefs.wallpaper;
+    document.documentElement.style.setProperty('--wallpaper',`url('/img/wallpapers/${wallpaperFiles[prefs.wallpaper]}')`);
     const w=wallpapers.find(w=>w.id===prefs.wallpaper);
     if($('#hero-image')) $('#hero-image').setAttribute('aria-label',w.alt);
     $$('[data-theme-choice]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.themeChoice===prefs.theme)));
-    $$('[data-wallpaper]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.wallpaper===prefs.wallpaper)));
+    $$('button[data-wallpaper]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.wallpaper===prefs.wallpaper)));
     $('#pet-toggle').checked=prefs.pet;$('#pet').hidden=!prefs.pet;$('#motion-toggle').checked=prefs.motion;
     $('meta[name="theme-color"]').content={light:'#f6f7f2',forest:'#e9eee5',dark:'#161f1e'}[prefs.theme];
     write('p3-journal-preferences',prefs);
@@ -66,7 +69,7 @@
   }
   applyPreferences();
   $$('[data-theme-choice]').forEach(el=>el.addEventListener('click',()=>{prefs.theme=el.dataset.themeChoice;applyPreferences();}));
-  $$('[data-wallpaper]').forEach(el=>el.addEventListener('click',()=>{prefs.wallpaper=el.dataset.wallpaper;applyPreferences();}));
+  $$('button[data-wallpaper]').forEach(el=>el.addEventListener('click',()=>{prefs.wallpaper=el.dataset.wallpaper;applyPreferences();}));
   $('#theme-shortcut').addEventListener('click',()=>{const themes=['light','forest','dark'];prefs.theme=themes[(themes.indexOf(prefs.theme)+1)%3];applyPreferences();toast({light:'晴日留白',forest:'苔绿手记',dark:'深夜漫游'}[prefs.theme]);});
   function stepWallpaper(direction){
     const index=wallpapers.findIndex(w=>w.id===prefs.wallpaper);
@@ -77,7 +80,7 @@
   $('#next-wallpaper')?.addEventListener('click',()=>stepWallpaper(1));
   $('#pet-toggle').addEventListener('change',e=>{prefs.pet=e.target.checked;applyPreferences();});
   $('#motion-toggle').addEventListener('change',e=>{prefs.motion=e.target.checked;applyPreferences();});
-  $('#reset-preferences').addEventListener('click',()=>{prefs={theme:'light',wallpaper:'alpine',pet:true,motion:true};applyPreferences();toast('已恢复默认偏好');});
+  $('#reset-preferences').addEventListener('click',()=>{prefs={theme:'light',wallpaper:'adventure',wallpaperRevision:2,pet:true,motion:true};applyPreferences();toast('已恢复默认偏好');});
   let lastOpener;
   document.addEventListener('click',e=>{
     const opener=e.target.closest('[data-open]');
