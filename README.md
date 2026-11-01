@@ -1,92 +1,83 @@
 # P3nd1ng's Journal
 
-适配 **GitHub Pages** 的个人博客：全屏大图首屏 → 向下滑入文章列表 → 沉浸阅读。点击「进入博客」、顶部「文章」或底部提示会在当前页面平滑向下滚动；也可以直接用滚轮或手指滑动。导航栏随文章区出现，资料与卡片轻柔浮现。关闭界面动效或开启系统减少动效后直接定位。音乐在这一过渡中保持播放。
+个人博客，发布地址：https://p3nd1ng.github.io/ 。日常操作是：创建 Markdown 文章 → 保存 → 推送 → 等待网站自动更新。
 
-`/blog/` 会自动跳转到首页的 `/#journal`，两个入口使用同一个文章区。双击首屏非按钮区域可直接跳到文章列表；单击向下箭头可平滑进入。文章列表只需维护 `blog/index.html`，运行 `npm run build` 会同步到首页文章区；修改后本地预览可以先执行 `node scripts/sync-home.mjs`。
+## 写文章
 
-## 文章置顶
+打开项目里的 `articles/` 文件夹，新建 `YYYY-MM-DD-文章名称.md`，例如 `2026-11-01-我的第一篇记录.md`。文件扩展名是 `.md`。
 
-打开 `js/pins.js`，在 `PINNED_POSTS` 中填写文章链接路径，例如：
+可以直接放在 `articles/`，也可以按生活、技术等主题，或按年份、月份建立子文件夹；所有子文件夹都会自动读取。文件夹用于本地整理，网站分类由文章开头的“分类：”决定。
 
-```js
-export const PINNED_POSTS = [
-  '/2025/10/27/hello-world/',
-];
-```
+文章内容示例：
 
-可填写多篇，置顶文章按这里的顺序显示并带有「置顶」标记，其他文章保持原有顺序。删除对应路径即可取消置顶；保存后刷新页面查看。初始列表为空，不会自动置顶文章。
+~~~markdown
+标题：我的第一篇记录
+分类：生活,随笔
 
-首页和文章区共用同一张固定背景图，向下直接进入半透明文章卡片，不再重复显示文章列表横幅或铺第二张壁纸。进入阅读区时会加上适合当前主题的柔和遮罩，保证文字清楚；文章封面仍作为卡片内容保留。
+今天开始用自己的博客记录生活。
 
-文章列表按用户提供的参考图改造为「顶部横幅 + 左侧个人资料与纵向导航 + 右侧横向图文卡片」，背景透出并配合毛玻璃。手机上自动变成单栏。多篇文章会交替排列封面左右位置；当前只展示仓库中唯一的真实文章。
+## 今天发生的事
 
-## 现有项目与这次改造
+这里写正文。
+~~~
 
-原仓库是 **Hexo 7.3.0 / Butterfly 5.5.1 已生成的静态文件**，没有 Hexo 的 `source/`、主题源文件或 `_config.yml`。此次直接维护现有静态站，没有引入服务端或外部音乐 API。旧 CSS/JS 保留供追溯，新页面仅加载 `journal.css`、`preferences.js`、`journal.js`。
+- 标题是网站显示的名称。
+- 分类支持多个，用逗号或顿号分隔；留空时显示“未分类”。
+- 文件名的日期决定文章日期和归档，后面的名称决定网址；发布后尽量不要改文件名。
+- 可在分类下一行添加 `封面：/img/articles/图片名.webp`，图片放在 `img/articles/`；不填写就使用默认封面。正文图片也使用这个目录。
+- `articles/` 中的文章都会参与公开发布，私人草稿请放在项目之外。
 
-- 保留唯一真实文章 Hello World 的完整正文、日期、原头像文件、图标及 CC BY-NC-SA 4.0 文章授权；当前个人头像使用站长提供的图片。
-- 保留 `/2025/10/27/hello-world/`、`/archives/`、`/archives/2025/`、`/archives/2025/10/`。
-- 新增 `/blog/`、`/about/`、`/credits/`、自定义 `404.html`，修正原来的 example.com 和无效菜单链接。
-- 三种主题、四张本地壁纸、可关闭的团子互动与动效、文章搜索及空结果状态。
-- 两首本地合成器乐小曲，支持播放/暂停、上一首/下一首、曲目选择、进度和音量调节。曲目/位置/音量会保存；跨页面返回后需点击继续播放，遵循浏览器播放限制。
-- 原生 dialog 提供键盘焦点约束、Escape 关闭及焦点归还；支持系统减少动效设置、触屏与窄屏。
+详细格式见 [写文章说明](博客管理/写文章说明.md)。
 
-## 本地运行
+## 预览与发布
 
-安装 Node.js 22 或更新版本。**没有运行依赖，不需要 npm install。**
+1. 保存文章。
+2. 需要查看效果时，双击 `博客管理/本地预览.cmd`，保持打开的预览窗口运行。
+3. 双击 `博客管理/一键发布.cmd`，检查修改清单，输入 `y` 确认。它会自动检查、提交并推送整个项目的修改。
+4. 在 [GitHub Actions](https://github.com/P3nd1ng/P3nd1ng.github.io/actions) 等待部署成功，再访问网站。
 
-```powershell
-cd <本仓库目录>
-npm start
-```
+也可以通过 Git 图形界面提交并推送到 `main`，不需要手动生成网页。自动发布会生成文章页、首页列表、分类筛选和日期归档。
 
-打开 http://localhost:4311 。端口占用时：
+首次使用电脑需要安装 Node.js 22 或更新版本及 Git，并完成 GitHub 登录。一键发布入口会在缺少组件时自动安装；首次直接使用本地预览前，需要先安装项目组件。
 
-```powershell
-$env:PORT = 4312
-npm start
-```
+仓库的 **Settings → Pages → Build and deployment → Source** 应选择 **GitHub Actions**。仅从仓库根目录直接发布不会自动生成 Markdown 文章。
 
-```powershell
-npm run check  # 检查本地链接、元数据和媒体文件
-npm test       # 路由、原文完整性、音频分段读取、404、预览目录保护等测试
-npm run build  # 校验并生成 dist/，仅包含网站公开文件
-```
+## 目录说明
 
-测试使用独立的 4317 端口。`dist/` 是可重新生成的目录。
-
-## 发布到 GitHub Pages
-
-目标仓库：`P3nd1ng/P3nd1ng.github.io`，站点地址：**https://p3nd1ng.github.io/**。
-
-1. 将本次改动提交并推送到仓库 `main` 分支。
-2. 仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
-3. 在 **Actions** 中运行 **Deploy journal to GitHub Pages**，或之后每次向 `main` 推送自动触发。
-4. 等待部署成功，再访问站点。首次改为 Actions 发布时，需要先完成第 2 步。
-
-`.github/workflows/pages.yml` 会运行校验、生成 `dist/`，再上传并发布。无需安装 Hexo，也无需 Sites、Vercel 等其他托管。工作流依照 [GitHub 官方 Pages 文档](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages) 配置。
-
-如果继续使用 **Deploy from a branch → main → /(root)**，根目录的静态文件与 `.nojekyll` 也可以直接发布。两种发布源选其一；使用 Actions 只会发布 `dist/` 中的网站资源。
-
-本地验证完成不代表线上已部署，线上状态需要以 GitHub Actions 成功记录及实际站点为准。
-
-## 日常修改
-
-| 内容 | 文件 |
+| 目录或文件 | 用途 |
 | --- | --- |
-| 全屏入口文字 | `index.html` |
-| 文章卡片、左侧个人资料与导航 | `blog/index.html` |
-| 置顶文章 | `js/pins.js` |
-| 全站布局、主题颜色与动效 | `css/journal.css` |
-| 个性化设置、壁纸列表、音乐曲目、团子互动 | `js/journal.js` |
-| 防止刷新时主题闪烁 | `js/preferences.js` |
-| 正文 | `2025/10/27/hello-world/index.html` |
-| 归档 | `archives/` 中的三个页面 |
-| 壁纸 | `img/wallpapers/` |
-| 音乐 | `audio/` |
+| `articles/` | Markdown 文章，日常主要操作这里 |
+| `img/articles/` | 文章配图 |
+| `博客管理/` | 本地预览、一键发布、写文章说明 |
+| `index.html`、`blog/` | 首页与文章列表模板 |
+| `2025/` | 保留的 Hello World 文章，也作为新文章的页面模板 |
+| `archives/` | 日期归档模板，发布时会自动生成包含新文章的归档 |
+| `about/`、`credits/`、`404.html` | 关于、素材来源、找不到页面时的提示 |
+| `css/`、`js/` | 当前网站样式、搜索、分类、主题、音乐控制等 |
+| `img/wallpapers/`、`audio/` | 网站壁纸和音乐 |
+| `scripts/`、`tests/`、`.github/` | 生成、检查及自动发布所需程序 |
+| `CNAME` | 自定义域名配置，保留为 `p3nd1ng.top`，发布时自动带入 |
+| `package.json`、`package-lock.json` | 项目组件和运行配置 |
+| `dist/`、`node_modules/` | 自动生成的网站与本地运行组件，不提交到仓库，无需手动编辑 |
 
-新增文章时建立新的日期/slug 目录，复制现有文章页面的外壳，更新正文、title、description、canonical、OG 地址与日期；同步在 `blog/index.html` 增加 `.article-card`（含可搜索的 `data-search`）、归档、计数与 `sitemap.xml` 中添加记录。文章列表在宽屏使用左侧栏与横向卡片、窄屏变成单栏。当前仅有一篇文章，因此未添加空的标签/分类页或示例文章。
+当前页面所需的文件已保留，旧主题脚本、旧写作入口及重复原图已清理。素材来源与授权见网站的 [素材鸣谢](https://p3nd1ng.github.io/credits/) 页面。
 
-替换音乐时使用你有权公开托管的音频，并更新 `journal.js` 中的曲目路径与名称。壁纸下载来源与授权见 `/credits/`。默认不调用第三方统计或字体服务。
+## 网站维护
 
-如之后恢复 Hexo 源工程，应先将这些布局迁移到主题模板再生成，避免 `hexo generate` 覆盖本次改造。
+- 首页入口文字：`index.html`。
+- 个人资料与列表模板：`blog/index.html`；文章卡片由发布程序生成。
+- 首页样式：`css/home.css`；通用样式：`css/journal.css`。
+- 主题、壁纸、音乐和交互：`js/journal.js`、`js/preferences.js`。
+- 置顶文章：在 `js/pins.js` 的 `PINNED_POSTS` 中填写文章路径；删除路径即可取消置顶。
+- 留言：文章模板已包含 giscus 区域。需要为仓库启用 Discussions、安装 giscus GitHub App，并在 `js/comments.js` 填写实际讨论分类配置。新 Markdown 文章会自动继承留言区。
+
+项目维护命令：
+
+~~~text
+npm ci          安装组件
+npm test        运行检查
+npm run build   生成用于发布的 dist 目录
+npm start       预览根目录页面；查看新 Markdown 文章请使用双击预览入口
+~~~
+
+本项目直接维护静态页面模板，未使用 Hexo 源工程；请勿直接运行 Hexo 生成程序覆盖现有文件。

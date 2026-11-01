@@ -7,11 +7,12 @@ import {once} from 'node:events';
 import {fileURLToPath} from 'node:url';
 import {orderPinned} from '../js/pins.js';
 const root=fileURLToPath(new URL('..',import.meta.url));
-const server=spawn(process.execPath,['scripts/serve.mjs'],{cwd:root,env:{...process.env,PORT:'4317'},windowsHide:true,stdio:['ignore','pipe','pipe']});
+const server=spawn(process.execPath,['scripts/serve.mjs'],{cwd:root,env:{...process.env,PORT:'0'},windowsHide:true,stdio:['ignore','pipe','pipe']});
 server.stderr.on('data',b=>process.stderr.write(b));
-await Promise.race([once(server.stdout,'data'),once(server,'exit').then(()=>{throw Error('Test server exited');})]);
+const [ready]=await Promise.race([once(server.stdout,'data'),once(server,'exit').then(()=>{throw Error('Test server exited');})]);
 after(()=>server.kill());
-const base='http://127.0.0.1:4317';
+const base=ready.toString().match(/http:\/\/127\.0\.0\.1:\d+/)?.[0];
+if(!base)throw Error('Test server did not report its address');
 test('pinned articles come first in configured order and other articles stay in order',()=>{
   const posts=['/a/','/b/','/c/','/d/'];
   assert.deepEqual(orderPinned(posts,['/c/index.html','/a/']),['/c/','/a/','/b/','/d/']);
@@ -21,6 +22,16 @@ test('pinned articles come first in configured order and other articles stay in 
 test('all existing and new routes return readable pages',async()=>{
   for(const route of ['/','/blog/','/archives/','/archives/2025/','/archives/2025/10/','/2025/10/27/hello-world/','/about/','/credits/']){
     const r=await fetch(base+route);assert.equal(r.status,200,route);assert.match(await r.text(),/<h1[ >]/);
+  }
+});
+test('optimized site images are served as WebP',async()=>{
+  for(const image of ['/img/avatar-20261027.webp',...['adventure','alpine','summit','forest'].map(name=>`/img/wallpapers/${name}.webp`)]){
+    const response=await fetch(base+image);
+    assert.equal(response.status,200,image);
+    assert.equal(response.headers.get('content-type'),'image/webp',image);
+    const bytes=Buffer.from(await response.arrayBuffer());
+    assert.equal(bytes.toString('ascii',0,4),'RIFF',image);
+    assert.equal(bytes.toString('ascii',8,12),'WEBP',image);
   }
 });
 test('original article body is byte-identical after line-ending normalization',async()=>{

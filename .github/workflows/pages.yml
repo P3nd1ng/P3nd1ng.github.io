@@ -23,6 +23,7 @@ jobs:
           node-version: '24'
       - name: Test and prepare static files
         run: |
+          npm ci
           npm test
           npm run build
       - uses: actions/configure-pages@v5

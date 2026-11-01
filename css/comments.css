@@ -1,0 +1,4 @@
+.comments-section{margin:48px 0 36px;padding:28px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
+.comments-section h2{margin:0 0 8px;font:28px var(--serif);color:var(--ink)}
+.comments-intro,.comments-status{color:var(--muted);font-size:13px;line-height:1.8}
+.comments-intro{margin:0 0 22px}.comments-status{margin:0}.giscus{margin-top:12px}

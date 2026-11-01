@@ -13,7 +13,7 @@
     github:'<path d="M9 19c-4 1-4-2-6-2m12 5v-4a3.5 3.5 0 0 0-1-2.5c3-.3 6-1.5 6-6a4.7 4.7 0 0 0-1-3 4 4 0 0 0-.1-3s-1-.3-3.3 1.2a12 12 0 0 0-6.2 0C7.1 2.2 6 2.5 6 2.5a4 4 0 0 0-.1 3 4.7 4.7 0 0 0-1 3c0 4.5 3 5.7 6 6A3.5 3.5 0 0 0 10 17v5"></path>'
   };
   const icon = (name) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${paths[name] || paths.sun}</svg>`;
-  const wallpaperFiles={adventure:'adventure.png',alpine:'alpine.jpg',summit:'summit.jpg',forest:'forest.jpg'};
+  const wallpaperFiles={adventure:'adventure.webp',alpine:'alpine.webp',summit:'summit.webp',forest:'forest.webp'};
   let prefs = {theme:'light',wallpaper:'adventure',wallpaperRevision:2,pet:true,motion:true};
   let storageAvailable = true;
   const read = (key, fallback) => {try {return JSON.parse(localStorage.getItem(key)) ?? fallback;} catch {storageAvailable=false;return fallback;}};
@@ -32,7 +32,7 @@
     {id:'forest',name:'绿野微光',alt:'阳光透过绿意盎然的森林'}
   ];
   const isHome=document.body.classList.contains('home-page');
-  $('#site-header').innerHTML = `<a class="brand" href="/" aria-label="P3nd1ng 博客首页"><img class="brand-mark" src="/img/avatar-20261027.png" alt="" aria-hidden="true"><span class="brand-name">P3nd1ng</span></a><div class="header-right"><nav class="desktop-nav" id="main-nav" aria-label="主导航"><a href="/blog/" ${document.body.classList.contains('blog-page')?'aria-current="page"':''}>文章</a><a href="/archives/" ${location.pathname.startsWith('/archives')?'aria-current="page"':''}>归档</a><a href="/about/" ${location.pathname==='/about/'?'aria-current="page"':''}>关于</a></nav><div class="header-tools"><button class="icon-button theme-shortcut" id="theme-shortcut" aria-label="切换主题">${icon('sun')}</button><button class="icon-button" data-open="music-dialog" aria-label="打开音乐播放器">${icon('music')}</button><button class="icon-button" data-open="settings-dialog" aria-label="打开个性化设置">${icon('settings')}</button><button class="icon-button menu-toggle" id="menu-toggle" aria-label="展开导航" aria-expanded="false" aria-controls="main-nav">${icon('menu')}</button></div></div>`;
+  $('#site-header').innerHTML = `<a class="brand" href="/" aria-label="P3nd1ng 博客首页"><img class="brand-mark" src="/img/avatar-20261027.webp" alt="" aria-hidden="true"><span class="brand-name">P3nd1ng</span></a><div class="header-right"><nav class="desktop-nav" id="main-nav" aria-label="主导航"><a href="/blog/" ${document.body.classList.contains('blog-page')?'aria-current="page"':''}>文章</a><a href="/archives/" ${location.pathname.startsWith('/archives')?'aria-current="page"':''}>归档</a><a href="/about/" ${location.pathname==='/about/'?'aria-current="page"':''}>关于</a></nav><div class="header-tools"><button class="icon-button theme-shortcut" id="theme-shortcut" aria-label="切换主题">${icon('sun')}</button><button class="icon-button" data-open="music-dialog" aria-label="打开音乐播放器">${icon('music')}</button><button class="icon-button" data-open="settings-dialog" aria-label="打开个性化设置">${icon('settings')}</button><button class="icon-button menu-toggle" id="menu-toggle" aria-label="展开导航" aria-expanded="false" aria-controls="main-nav">${icon('menu')}</button></div></div>`;
   if(isHome){
     $('#site-header .brand').setAttribute('href','#welcome');
     $('#main-nav a').setAttribute('href','#journal');
@@ -98,9 +98,11 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
   document.addEventListener('click',e=>{if(!e.target.closest('#site-header'))closeMenu();});
   const search=$('#article-search');
-  function filterArticles(){const query=search.value.trim().toLocaleLowerCase();let count=0;$$('[data-search]').forEach(el=>{el.hidden=!el.dataset.search.includes(query);if(!el.hidden)count++;});$('#empty-state').hidden=count>0;$('#feed-end').hidden=count===0;$('#search-status').textContent=query?`找到 ${count} 篇文章`:'';}
+  const category=$('#article-category');
+  function filterArticles(){const query=search.value.trim().toLocaleLowerCase(),selected=category?.value||'';let count=0;$$('[data-search]').forEach(el=>{let tags=[];try{tags=JSON.parse(el.dataset.tags||'[]');}catch{}const matches=!selected||(selected==='untagged'?tags.length===0:tags.includes(selected.slice(4)));el.hidden=!el.dataset.search.includes(query)||!matches;if(!el.hidden)count++;});$('#empty-state').hidden=count>0;$('#feed-end').hidden=count===0;$('#search-status').textContent=query||selected?`找到 ${count} 篇文章`:'';}
   search?.addEventListener('input',filterArticles);
-  $('#clear-search')?.addEventListener('click',()=>{search.value='';filterArticles();search.focus();});
+  category?.addEventListener('change',filterArticles);
+  $('#clear-search')?.addEventListener('click',()=>{search.value='';if(category)category.value='';filterArticles();search.focus();});
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const scrollBehavior=()=>prefs.motion&&!reducedMotion.matches?'smooth':'instant';
   const hero=isHome?$('.hero'):null;

@@ -2,7 +2,7 @@
 (() => {
   try {
     const p = JSON.parse(localStorage.getItem('p3-journal-preferences') || '{}');
-    const wallpapers = { adventure: 'adventure.png', alpine: 'alpine.jpg', summit: 'summit.jpg', forest: 'forest.jpg' };
+    const wallpapers = { adventure: 'adventure.webp', alpine: 'alpine.webp', summit: 'summit.webp', forest: 'forest.webp' };
     const wallpaper = p.wallpaperRevision === 2 && Object.hasOwn(wallpapers, p.wallpaper) ? p.wallpaper : 'adventure';
     if (['light', 'forest', 'dark'].includes(p.theme)) document.documentElement.dataset.theme = p.theme;
     document.documentElement.dataset.wallpaper = wallpaper;
